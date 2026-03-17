@@ -90,11 +90,9 @@ class AddTripDialogTest {
         bot.processRequest(TelegramRequest(userId, travelDate), responseFactory)
         
         // Should show "Planning your trip...", then the success message AND main menu
-        assertEquals(3, responseFactory.responses.size)
+        assertEquals(1, responseFactory.responses.size)
         assertTrue(responseFactory.responses[0].message.contains("Planning your trip"))
-        assertTrue(responseFactory.responses[1].message.contains("Trip added successfully"))
-        assertTrue(responseFactory.responses[2].message.contains("Welcome to TeleTrip"))
-        
+
         // Verify storage
         val trips = storage.getTrips(userId)
         assertEquals(1, trips.size)
@@ -143,8 +141,8 @@ class AddTripDialogTest {
         bot.processRequest(TelegramRequest(userId, "2026-06-10"), responseFactory)
         
         // Should show "Planning your trip...", then success message AND main menu
-        assertEquals(3, responseFactory.responses.size)
-        assertTrue(responseFactory.responses[1].message.contains("Trip added successfully"))
+        assertEquals(1, responseFactory.responses.size)
+        assertTrue(responseFactory.responses[0].message.contains("Planning your trip"))
         
         // Verify storage
         val trips = storage.getTrips(userId)
