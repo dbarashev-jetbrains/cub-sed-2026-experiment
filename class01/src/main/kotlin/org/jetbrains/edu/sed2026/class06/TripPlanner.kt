@@ -6,7 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
-import org.jetbrains.edu.sed2026.class06.BadFlightSearch as FlightSearch
+import org.jetbrains.edu.sed2026.class06.FlightSearch2 as FlightSearch
 import org.jetbrains.edu.sed2026.class01.FlightSearchResult
 import org.jetbrains.edu.sed2026.class01.HotelSearch
 import org.jetbrains.edu.sed2026.class01.HotelSearchResult
@@ -296,9 +296,9 @@ fun createTripPlanner(): TripPlannerImpl {
 
     // TODO: we have an improved TripPlanner that uses coroutines, but we don't want to use it yet'
     return TripPlannerImpl().apply {
-        flightSearchFactory = { BadResilientFlightSearch(
-            primarySearch = BadSerpFlightSearch(httpClient),
-            fallbackSearch = BadDuffelFlightSearch(httpClient)
+        flightSearchFactory = { ResilientFlightSearch2(
+            primarySearch = SerpFlightSearch2(httpClient),
+            fallbackSearch = DuffelFlightSearch2(httpClient)
         )}
         hotelSearchFactory = {
             hotelSearch

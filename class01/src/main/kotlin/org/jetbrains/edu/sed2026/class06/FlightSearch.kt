@@ -12,7 +12,7 @@ import java.time.LocalDate
  * Result of a flight search that includes HTTP status information.
  * This allows the ResilientFlightSearch to determine if the response is satisfactory.
  */
-data class BadFlightSearchResult(
+data class FlightSearchResult2(
     val statusCode: Int,
     val body: String
 ) {
@@ -22,19 +22,19 @@ data class BadFlightSearchResult(
 /**
  * Extended interface that exposes HTTP response details.
  */
-interface BadFlightSearch {
-    fun searchFlights(origin: String, destination: String, departureDate: LocalDate): BadFlightSearchResult
+interface FlightSearch2 {
+    fun searchFlights(origin: String, destination: String, departureDate: LocalDate): FlightSearchResult2
 }
 
 /**
  * Serp implementation that returns status code along with body
  */
-class BadSerpFlightSearch(
+class SerpFlightSearch2(
     private val httpClient: HttpClient,
     private val apiKey: String = ""
-) : BadFlightSearch {
+) : FlightSearch2 {
 
-    override fun searchFlights(origin: String, destination: String, departureDate: LocalDate): BadFlightSearchResult {
+    override fun searchFlights(origin: String, destination: String, departureDate: LocalDate): FlightSearchResult2 {
         val url = "https://serpapi.com/search.json?" +
                 "stops=1&" +
                 "engine=google_flights&" +
@@ -50,21 +50,21 @@ class BadSerpFlightSearch(
             .build()
 
         val response = httpClient.send(request, HttpResponse.BodyHandlers.ofString())
-        return BadFlightSearchResult(response.statusCode(), response.body())
+        return FlightSearchResult2(response.statusCode(), response.body())
     }
 }
 
 /**
  * Duffel implementation that returns status code along with body
  */
-class BadDuffelFlightSearch(
+class DuffelFlightSearch2(
     private val httpClient: HttpClient,
     private val apiKey: String = ""
-) : BadFlightSearch {
+) : FlightSearch2 {
 
     private val gson = Gson()
 
-    override fun searchFlights(origin: String, destination: String, departureDate: LocalDate): BadFlightSearchResult {
+    override fun searchFlights(origin: String, destination: String, departureDate: LocalDate): FlightSearchResult2 {
         val requestBody = mapOf(
             "data" to mapOf(
                 "slices" to listOf(
@@ -94,7 +94,7 @@ class BadDuffelFlightSearch(
             .build()
 
         val response = httpClient.send(request, HttpResponse.BodyHandlers.ofString())
-        return BadFlightSearchResult(response.statusCode(), response.body())
+        return FlightSearchResult2(response.statusCode(), response.body())
     }
 }
 
@@ -102,12 +102,12 @@ class BadDuffelFlightSearch(
  * Resilient flight search that tries Serp first, then falls back to Duffel
  * if the response is not satisfactory (not HTTP 200 or empty body).
  */
-class BadResilientFlightSearch(
-    private val primarySearch: BadFlightSearch,
-    private val fallbackSearch: BadFlightSearch
-) : BadFlightSearch {
+class ResilientFlightSearch2(
+    private val primarySearch: FlightSearch2,
+    private val fallbackSearch: FlightSearch2
+) : FlightSearch2 {
 
-    override fun searchFlights(origin: String, destination: String, departureDate: LocalDate): BadFlightSearchResult {
+    override fun searchFlights(origin: String, destination: String, departureDate: LocalDate): FlightSearchResult2 {
         // Try primary search first
         val primaryResult = try {
             primarySearch.searchFlights(origin, destination, departureDate)
@@ -130,7 +130,7 @@ class BadResilientFlightSearch(
         } catch (e: Exception) {
             println("Fallback search failed with exception: ${e.message}")
             // Return whatever we got from primary, or an error result
-            return primaryResult ?: BadFlightSearchResult(500, "")
+            return primaryResult ?: FlightSearchResult2(500, "")
         }
 
         return fallbackResult
