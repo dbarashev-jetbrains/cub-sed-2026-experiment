@@ -4,7 +4,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.time.LocalDate
-import kotlin.collections.set
 
 @Serializable
 data class TripBuilder(
@@ -15,12 +14,12 @@ data class TripBuilder(
 ) {
     val segmentsCompleted: Boolean get() = segments.size == cities.size - 1
 
-    fun toSnapshot(): TripBuilderSnapshot =
-        TripBuilderSnapshot(userId, Json.encodeToString(this))
+    fun toSnapshot(): AddTripDialogSnapshot =
+        AddTripDialogSnapshot(userId, Json.encodeToString(this))
 
 }
 
-data class TripBuilderSnapshot(val userId: Long, val json: String) {
+data class AddTripDialogSnapshot(val userId: Long, val json: String) {
     fun restore(): TripBuilder {
         return Json.decodeFromString(json)
     }

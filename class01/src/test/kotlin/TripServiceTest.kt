@@ -7,7 +7,7 @@ import java.time.LocalDate
 class InMemoryStorage : Storage {
     private val trips = mutableListOf<TripPlanRequest>()
     private var nextId = 1
-    private val snapshots = mutableMapOf<Long, TripBuilderSnapshot>()
+    private val snapshots = mutableMapOf<Long, AddTripDialogSnapshot>()
 
     override fun getTrips(userId: Long): List<TripPlanRequest> {
         return trips.filter { it.userId == userId }
@@ -20,11 +20,11 @@ class InMemoryStorage : Storage {
         return tripId
     }
 
-    override fun saveSnapshot(snapshot: TripBuilderSnapshot) {
+    override fun saveSnapshot(snapshot: AddTripDialogSnapshot) {
         snapshots[snapshot.userId] = snapshot
     }
 
-    override fun getSnapshot(userId: Long): TripBuilderSnapshot? {
+    override fun getSnapshot(userId: Long): AddTripDialogSnapshot? {
         return snapshots[userId]
     }
 

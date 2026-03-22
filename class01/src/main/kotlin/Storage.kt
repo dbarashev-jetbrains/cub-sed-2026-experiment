@@ -9,8 +9,8 @@ interface Storage {
     fun getTrips(userId: Long): List<TripPlanRequest>
     fun addTrip(userId: Long, cities: List<String>, segments: List<TripSegment>): Int
 
-    fun saveSnapshot(snapshot: TripBuilderSnapshot)
-    fun getSnapshot(userId: Long): TripBuilderSnapshot?
+    fun saveSnapshot(snapshot: AddTripDialogSnapshot)
+    fun getSnapshot(userId: Long): AddTripDialogSnapshot?
     fun removeSnapshot(userId: Long)
 }
 
@@ -123,7 +123,7 @@ class SQLiteStorage(private val dbPath: String) : Storage {
         return tripId
     }
 
-    override fun saveSnapshot(snapshot: TripBuilderSnapshot) {
+    override fun saveSnapshot(snapshot: AddTripDialogSnapshot) {
         DriverManager.getConnection("jdbc:sqlite:$dbPath").use { conn ->
             val stmt = conn.prepareStatement("INSERT OR REPLACE INTO snapshots (user_id, json) VALUES (?, ?)")
             stmt.setLong(1, snapshot.userId)
@@ -132,13 +132,13 @@ class SQLiteStorage(private val dbPath: String) : Storage {
         }
     }
 
-    override fun getSnapshot(userId: Long): TripBuilderSnapshot? {
+    override fun getSnapshot(userId: Long): AddTripDialogSnapshot? {
         DriverManager.getConnection("jdbc:sqlite:$dbPath").use { conn ->
             val stmt = conn.prepareStatement("SELECT json FROM snapshots WHERE user_id = ?")
             stmt.setLong(1, userId)
             val rs = stmt.executeQuery()
             if (rs.next()) {
-                return TripBuilderSnapshot(userId, rs.getString("json"))
+                return AddTripDialogSnapshot(userId, rs.getString("json"))
             }
         }
         return null
